@@ -109,4 +109,50 @@ df.rename(columns={
     inplace=True)
 ```
 
-....
+Get single column statistics:
+```
+df.column_name.command()
+```
+
+Command	Descriptions
+```
+mean	Average of all values in column
+std		Standard deviation
+median	Median
+max		Maximum value in column
+min		Minimum value in column
+count	Number of values in column
+nunique	Number of unique values in column
+unique	List of unique values in column
+```
+
+Grouping for statistics (generates series):
+```
+df.groupby('column_name').column_name.command()
+```
+
+Grouping for statistics (generates series):
+```
+df.groupby('group_column').target_column.command().reset_index()
+df.groupby(['group_column1','group_column2'])['target_column'].command().reset_index()
+```
+
+Rename the newly generated column in case of df:
+```
+df.rename(columns={ 'current_column_name': 'new_column_name', }, inplace=True)
+```
+
+Use lambda function to perform percentile calculations:
+```
+high_earners = df.groupby('category')
+	.wage
+    .apply(lambda x: np.percentile(x, 75))
+    .reset_index()
+```
+
+Pivot table:
+```
+df.pivot(columns='ColumnToPivot',
+         index='ColumnToBeRows',
+         values='ColumnToBeValues').reset_index()
+```
