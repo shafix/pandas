@@ -156,3 +156,46 @@ df.pivot(columns='ColumnToPivot',
          index='ColumnToBeRows',
          values='ColumnToBeValues').reset_index()
 ```
+
+Fill new column with true/false depending on whether another column is filled (~ means NOT):
+```
+ad_clicks['ad_click_timestamp'] = ~ad_clicks.ad_click_timestamp.isnull() 
+```
+
+Inner join two tables via implicit same column name (pd function):
+```
+sales_vs_targets = pd.merge(sales, targets)
+```
+
+Inner join two (or more) tables via implicit same column name (df in-built function):
+```
+big_df = orders.merge(customers).merge(products)
+```
+
+Inner join two tables via implicit same column name (pd function) by using renaming:
+```
+new_df = pd.merge( orders, customers.rename(columns={'id': 'customer_id'})) -- Use renaming to continue using implicit merge column
+```
+
+Inner join two tables via explicit column name (pd function):
+```
+new_df = pd.merge(
+    orders,
+    customers,
+    left_on='customer_id',
+    right_on='id',
+    suffixes=['_order', '_customer']
+)
+```
+
+Outter joins of two tables with implicit colum name (pd function):
+```
+pd.merge(company_a, company_b, how='outer')
+pd.merge(company_a, company_b, how='left')
+pd.merge(company_a, company_b, how='right')
+```
+
+Concatenate (UNION) several frames with the same columns:
+```
+pd.concat([df1, df2])
+```
