@@ -199,3 +199,8 @@ Concatenate (UNION) several frames with the same columns:
 ```
 pd.concat([df1, df2])
 ```
+
+Do something with all columns using map:
+```
+restaurants.columns = map(str.lower, restaurants.columns) -- puts all column names to LOWER
+```
