@@ -204,3 +204,48 @@ Do something with all columns using map:
 ```
 restaurants.columns = map(str.lower, restaurants.columns) -- puts all column names to LOWER
 ```
+
+Count the number of unique values in each column:
+```
+restaurants.nunique() 
+```
+
+Count the number of missing values in each column:
+```
+restaurants.isna().sum()
+```
+
+Replace some values using a where clause:
+```
+# here our .where() function replaces latitude values greater than 40 with NaN values
+restaurants['latitude'] = restaurants['latitude'].where(restaurants['latitude'] > 40, np.nan) 
+```
+
+Characterizing missingness with crosstab:
+```
+pd.crosstab(
+ 
+        # tabulates the boroughs as the index
+        restaurants['boro'],  
+ 
+        # tabulates the number of missing values in the url column as columns
+        restaurants['url'].isna(), 
+ 
+        # names the rows
+        rownames = ['boro'],
+ 
+        # names the columns 
+        colnames = ['url is na'])
+```
+
+Removing some text prefixes (for example url) using lstrip (left - strip):
+```
+# .str.lstrip('https://') removes the “https://” from the left side of the string
+restaurants['url'] = restaurants['url'].str.lstrip('https://') 
+ 
+# .str.lstrip('www.') removes the “www.” from the left side of the string
+restaurants['url'] = restaurants['url'].str.lstrip('www.') 
+ 
+# the .head(10) function will show us the first 10 rows in our dataset
+print(restaurants.head(10))
+```
