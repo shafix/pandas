@@ -249,3 +249,105 @@ restaurants['url'] = restaurants['url'].str.lstrip('www.')
 # the .head(10) function will show us the first 10 rows in our dataset
 print(restaurants.head(10))
 ```
+
+Import multiplefiles with the same structure and merge them all into one data frame:
+```
+import pandas as pd
+import glob
+
+student_files = glob.glob("exams*.csv")
+ 
+df_list = []
+for filename in student_files:
+  data = pd.read_csv(filename)
+  df_list.append(data)
+ 
+df = pd.concat(df_list)
+```
+
+Using "melt" to transform columns into rows:
+```
+Account		Checking	Savings
+“12456543”	8500		8900
+“12283942”	6410		8020
+ 
+pd.melt(frame=df, 
+		id_vars=["name"], -- put the columns you want to keep untouched here
+		value_vars=["Checking","Savings"], 
+		value_name="Amount", 
+		var_name="Account Type")
+		
+df.columns(["Account", "Account Type", "Amount"]) -- explicitly naming the columns afterwards if needed
+		
+Account 	Type		Amount
+“12456543”	“Checking”	8500
+“12456543”	“Savings”	8900
+```
+
+Dealing with duplicate rows:
+```
+df.duplicated() -- shows true if another row was encountered along the way to this row that has the exact same values in all columns
+df.drop_duplicates() -- drops pure duplicates (keeps first occurance)
+df.drop_duplicates(subset=['item']) -- drops duplicates based on a specific column only (keeps first occurance)
+
+duplicate_students = students.duplicated() -- get true/false series
+print(duplicate_students.value_counts()) -- check how many are duplicated
+students = students[~duplicate_students] -- drop the duplicates manually
+```
+
+Splitting column value into several columns (primitive):
+```
+# Example : "M14" (gender_age)
+students["gender"] = students.gender_age.str[0:1]
+students["age"] = students.gender_age.str[1:]
+```
+
+Splitting column value into several columns (with delimiter):
+```
+# Example : "admin_US" and "user_Kenya" (type)
+
+df['str_split'] = df.type.str.split('_') # Create the 'str_split' column
+df['usertype'] = df.str_split.str.get(0) # Create the 'usertype' column
+df['country'] = df.str_split.str.get(1)  # Create the 'country' column
+
+# or..
+
+str_split = df["type"].str.split('_') 	 # Create the 'str_split' series
+df['usertype'] = str_split.str.get(0) 	 # Create the 'usertype' column
+df['country'] = str_split.str.get(1)  	 # Create the 'country' column
+```
+
+Get series object of data types of each column:
+```
+print(df.dtypes)
+```
+
+Replace a part of a string using regexp and convert data type to numeric:
+```
+fruit.price = fruit.price.replace('[\$]', '', regex=True)
+fruit.price = pd.to_numeric(fruit.price)
+# or
+fruit.price = pd.to_numeric( fruit.price.replace('[\$]', '', regex=True) )
+```
+
+Split string on a certain part using regex (results in a data frame):
+```
+Example: “lunges - 30 reps” becomes "lunges - " | "30" | "reps"
+split_df = df['exerciseDescription'].str.split('(\d+)', expand=True) -- splits on a number
+
+df.reps = pd.to_numeric(split_df[1]) -- add column "reps" to the original df
+df.exercise = split_df[2].replace('[\- ]', '', regex=True) -- add column "excercise" to the original df after cleaning it up a bit with regexp replace
+```
+
+Dealing with NaN values in a data frame:
+```
+df = df["column_name"].isnull() -- creates a series of true/false depending on whether a certain column value is NaN
+print(df.value_counts()) -- check how many are true(NaN) vs false
+df = df.dropna() -- drops all rows that have NaN in any column
+df = df.dropna(subset=["column_name"]) -- drops all rows that have NaN in a certain column
+df = df.fillna( value={ "column_name":df.column_name.mean() } ) -- fills the column with the mean of that column
+df = df.fillna( value={ "column_name": 0 } ) -- fills the column with 0
+df = df.fillna( 0 ) -- fills NaN with 0 in all columns
+```
+
+
