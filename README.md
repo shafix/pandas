@@ -350,4 +350,25 @@ df = df.fillna( value={ "column_name": 0 } ) -- fills the column with 0
 df = df.fillna( 0 ) -- fills NaN with 0 in all columns
 ```
 
+Single number statistics:
+```
+import numpy as np
+from scipy import stats
 
+my_arr = [3, 5, -2, 49, 10]
+
+# Central tendency summary statistics
+my_arr_median = np.median(my_arr)
+my_arr_mode = stats.mode(my_arr)
+my_arr_mean = np.mean(my_arr)
+
+print(f'Mean {str(my_arr_mean)}')
+print(f'Median {str(my_arr_median)}')
+print(f'Mode {str(my_arr_mode)}')
+
+# Spread summary statistics
+variance = np.var(my_arr)
+standard_deviation = np.std(my_arr)
+print(f'Variance {str(variance)}')
+print(f'Standard Deviation {str(standard_deviation)}')
+```
