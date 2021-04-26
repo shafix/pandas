@@ -372,3 +372,118 @@ standard_deviation = np.std(my_arr)
 print(f'Variance {str(variance)}')
 print(f'Standard Deviation {str(standard_deviation)}')
 ```
+
+Replacing missing values with NaN and assign type float
+```
+df['some_column'] = df['some_column'].replace(['missing'], np.nan)
+df['some_column'] = df['some_column'].astype('float')
+```
+
+Transforming variables to categorical and add categorical label encoding:
+```
+movies['rating'] = pd.Categorical(movies['rating'], ['G', 'PG', 'PG-13', 'R','UNRATED', 'NOT RATED'], ordered=True)
+print(movies['rating'].unique())
+movies['rating_codes'] = movies['rating'].cat.codes
+```
+
+One-Hot Encoding / label encoding without order (doesn't need categorical var):
+```
+titanic = pd.get_dummies(data=titanic, columns=['Embarked'])
+```
+
+Calculating data range:
+```
+min_age = np.amin(exercise_ages) # Answer is 22
+max_age = np.amax(exercise_ages) # Answer is 62
+age_range = max_age - min_age
+```
+
+Histograms, bins:
+```
+ages = np.array([22, 27, 45, 62, 34, 52, 42, 22, 34, 26, 24, 65, 34, 25, 45, 23, 45, 33, 52, 55])
+
+import numpy as np
+np.histogram(ages, range = (20, 70), bins = 5)
+
+from matplotlib import pyplot as plt
+plt.hist(exercise_ages, range = (20, 70), bins = 5, edgecolor='black')
+plt.title("Decade Frequency")
+plt.xlabel("Ages")
+plt.ylabel("Count")
+plt.show()
+```
+
+Quartiles:
+```
+dataset = [50, 10, 4, -3, 4, -20, 2]
+
+import numpy as np
+third_quartile = np.quantile(dataset, 0.75)
+quartiles = np.quantile(dataset, [0.25, 0.5, 0.75])
+five_equal_parts = np.quantile(dataset, [0.2, 0.4, 0.6, 0.8])
+
+import matplotlib.pyplot as plt
+plt.hist(dataset)
+for quartile in quartiles:
+  plt.axvline(x=quartile, c = 'r')
+plt.show()
+```
+
+IQR - inter quartile range:
+```
+iqr = q3 - q1
+
+or 
+
+From scipy.stats import iqr
+interquartile_range = iqr(dataset)
+```
+
+Boxplots:
+```
+import matplotlib.pyplot as plt
+ 
+dataset_one = [1, 2, 3, 4, 5]
+dataset_two = [3, 4, 5, 6, 7]
+plt.boxplot([dataset_one, dataset_two],labels = ["dataset_one", "dataset_two"])
+plt.show()
+```
+
+Getting median of ordinal categorical data using categorical cat codes:
+```
+# Check unique statuses
+tree_health_statuses = nyc_trees["health"].unique()
+print(tree_health_statuses)
+
+# Create order worst -> best
+health_categories = ['Poor','Fair','Good']
+
+# Transform to categorical
+nyc_trees['health'] = pd.Categorical(nyc_trees['health'], health_categories, ordered=True)
+
+# Get median
+nyc_trees_health_median_index = np.median(nyc_trees['health'].cat.codes)
+print(nyc_trees_health_median_index) # Output: 2
+ 
+# Find the median category
+nyc_trees_health_median_category = health_categories[int(nyc_trees_health_median_index)]
+print(nyc_trees_health_median_category) # Output: Good
+```
+
+Categorical variable proportions:
+```
+df['education'].value_counts(dropna = False, normalize = True)
+```
+
+
+Binary variable mean / proportion:
+```
+np.mean(df['income_>50K']) #output: 0.24 or 24% have income >50k
+```
+
+Non binary variable made to binary to calculate frequency and proportion:
+```
+(df.workclass == 'Local-gov').sum()  #output: 2093
+(df.workclass == 'Local-gov').mean() #output: 0.064 or 6.4% work in the local government
+```
+
