@@ -487,3 +487,236 @@ Non binary variable made to binary to calculate frequency and proportion:
 (df.workclass == 'Local-gov').mean() #output: 0.064 or 6.4% work in the local government
 ```
 
+Get full summary statistics for all columns in a data frame:
+```
+df.describe(include='all')
+```
+
+Barcharts with seaborn:
+```
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.countplot(flu_results["Results"])
+plt.show()
+
+# Giving some ordering
+sns.countplot( df["victory_status"], order=df["victory_status"].value_counts(ascending=True).index )
+sns.countplot( df["Grade Level"], 	 order=["First Year", "Second Year", "Third Year", "Fourth Year"] )
+```
+
+Visibility improvments for barcharts:
+```
+# rotates the value labels slightly so they don’t overlap, also slightly increases font size
+plt.xticks(rotation=30, fontsize=10)
+# increases the variable label font size slightly to increase readability
+plt.xlabel(column, fontsize=12)
+```
+
+
+Piecharts with matplotlib:
+```
+import pandas as pd
+import matplotlib.pyplot as plt
+wedge_sizes = student_grades["Proportions"]
+grade_labels = student_grades["Grades"]
+plt.pie(wedge_sizes, labels = grade_labels)
+plt.axis('equal') # make the pie flat
+plt.tight_layout() # adjust spacing
+plt.title(“Student Grade Distribution”)
+plt.show()
+```
+
+Plot multiple columns as barcharts:
+```
+columns = df.columns.tolist()
+
+for column in columns:
+  sns.countplot( df[column] )
+  sns.countplot( df[column], order=df[column].value_counts().index)
+  plt.xticks(rotation=30, fontsize=10)
+  plt.xlabel(column, fontsize=12)
+  plt.title(column + ' Value Counts')
+  plt.show()
+  plt.clf()
+```
+
+Data centering:
+```
+#Data centering involves subtracting the mean of a data set from each data point so that the new mean is 0.
+#Centered data is useful because it tells us how far above or below the mean each data point is.
+```
+
+Normalizing data (fit data between 0 and 1) and Standartizing data:
+```
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+normalized_data = scaler.fit_transform(data)
+
+scaler = StandardScaler()
+standardized_data = scaler.fit_transform(data)
+```
+
+Binning Numerical Data
+```
+student_ages = dance_class['Age']
+print(student_ages.min()) # 23
+print(student_ages.max()) # 65
+bins = [20, 30, 40, 50, 60, 70]
+dance_class['binned_age'] = pd.cut(dance_class['Age'], bins)
+
+  binned_age  Age
+0   (20, 30]   23
+1   (20, 30]   28
+2   (40, 50]   45
+3   (60, 70]   63
+4   (30, 40]   35
+
+# -----------------------------------------------------------
+# Plot the bar graph of binned ages
+dance_class['binned_age'].value_counts().plot(kind='bar')
+ 
+# Label the bar graph 
+plt.title('Dance Class Age Distribution')
+plt.xlabel('Ages')
+plt.ylabel('Count') 
+ 
+# Show the bar graph 
+plt.show()
+# -----------------------------------------------------------
+# If we want to label the bins...
+# Store the labels for our bins
+age_labels = ['Young Adult', 'Adult', 'Middle Aged', 'Middle-Older Age', 'Senior']
+ 
+# Bin the values of the 'Age' column and specify the labels 
+dance_class['binned_age'] = pd.cut(dance_class['Age'], bins, labels = age_labels)
+# -----------------------------------------------------------
+```
+
+Combining Categories
+```
+votes = election_data['Vote'].value_counts()
+print(votes)
+
+Liliana    1067
+John        998
+William     494
+Emilie      196
+Pattie        6
+Neil          3
+Bob           2
+Demi          1
+David         1
+Hester        1
+
+mask = election_data.isin( votes[votes < 200].index )
+election_data[mask] = 'Other'
+print(election_data['Vote'].value_counts())
+
+Liliana    1067
+John        998
+William     494
+Other       210
+```
+
+Log transformation:
+```
+data = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4]
+
+import numpy as np
+log_data = np.log(data)
+print(log_data)
+# 0, 0, 0, 0, 0.693, 0.693, 0.693, 1.098, 1.098, 1.386, 1.386
+
+or..
+
+from sklearn.preprocessing import PowerTransformer
+log_transform = PowerTransformer()
+log_transform.fit_transform(data)
+```
+
+Sort dataframe by certain column:
+sorted_data = dataframe_name.sort_values(by=['Column Name'])
+
+
+Relationship between categorical and quantitative variables:
+```
+scores_GP = students["score"][students.school == 'GP'] # Scores of school 1
+scores_MS = students["score"][students.school == 'MS'] # Scores of school 2
+
+# Check mean difference
+mean_GP = np.mean(scores_GP)
+mean_MS = np.mean(scores_MS)
+print(mean_GP) #output: 10.49
+print(mean_MS) #output: 9.85
+print(mean_GP - mean_MS) #Output: 0.64
+
+# Check median difference
+median_GP = np.median(scores_GP)
+median_MS = np.median(scores_MS)
+print(median_GP) #Output: 11.0
+print(median_MS) #Output: 10.0
+print(median_GP-median_MS) #Output: 1.0
+
+# Comparing boxplots
+sns.boxplot(data = students, x = 'school', y = 'score')
+plt.show()
+plt.clf()
+
+# Compare histograms
+plt.hist(scores_GP , color="blue", label="GP", normed=True, alpha=0.5) # might be "density" instead of "normed"
+plt.hist(scores_MS , color="red", label="MS", normed=True, alpha=0.5) # might be "density" instead of "normed"
+plt.legend()
+plt.show()
+plt.clf()
+```
+
+
+Relationship between two quantitative variables:
+```
+# Scatterplot:
+plt.scatter(x = housing.price, y = housing.sqfeet)
+plt.xlabel('Rental Price (USD)')
+plt.ylabel('Area (Square Feet)')
+plt.show()
+
+# Covariance (linear)
+cov_mat_price_sqfeet = np.cov(housing.price, housing.sqfeet)
+print(cov_mat_price_sqfeet) #output: [ [184332.9  57336.2] [ 57336.2 122045.2] ]
+
+# Pearson Correlation (linear)
+from scipy.stats import pearsonr
+corr_price_sqfeet, p = pearsonr(housing.price, housing.sqfeet)
+print(corr_price_sqfeet) #output: 0.507
+
+```
+
+Relationship between two categorical variables:
+```
+# Frequenceies
+inluence_leader_freq = pd.crosstab(npi.influence, npi.leader) #do you influence people yes/no + are you a good leader yes/no
+print(inluence_leader_freq)
+
+# Proportions
+influence_leader_prop = influence_leader_freq/len(npi)
+print(influence_leader_prop)
+
+# Marginal proportions
+leader_marginals = influence_leader_prop.sum(axis=0)
+print(leader_marginals)
+influence_marginals =  influence_leader_prop.sum(axis=1)
+print(influence_marginals)
+
+# Expected Contingency Table
+from scipy.stats import chi2_contingency
+chi2, pval, dof, expected = chi2_contingency(influence_leader_freq)
+print(np.round(expected))
+
+# The Chi-Square Statistic (how strongly related are they?)
+from scipy.stats import chi2_contingency
+chi2, pval, dof, expected = chi2_contingency(influence_leader_freq)
+print(chi2) # output: 1307.88 ( a Chi-Square statistic larger than around 4 would strongly suggest an association between the variables )
+
+```
+
